@@ -1,0 +1,49 @@
+#!/bin/sh
+#
+# func:		Starts the func certmaster daemon
+#
+# Version:	@(#) /etc/rc.d/init.d/func 0.1
+#
+# chkconfig:	- 98 99
+# description:	Starts and stops the func daemon at startup and shutdown..
+
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+# See how we were called.
+case "$1" in
+  start)
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/certmaster ]; then
+		msg_starting "certmaster"
+		daemon /usr/bin/certmaster
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/certmaster
+	else
+		msg_already_running "certmaster"
+	fi
+	;;
+  stop)
+	if [ -f /var/lock/subsys/certmaster ]; then
+		msg_stopping "certmaster"
+		killproc certmaster
+		rm -f /var/lock/subsys/certmaster
+	else
+		msg_not_running "certmaster"
+	fi
+	;;
+  status)
+	status certmaster
+	exit $?
+	;;
+  restart|force-reload)
+	$0 stop
+	$0 start
+	exit $?
+	;;
+  *)
+	msg_usage "$0 {start|stop|restart|force-reload|status}"
+	exit 3
+esac
+
+exit $RETVAL
