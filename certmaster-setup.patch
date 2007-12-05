@@ -1,0 +1,11 @@
+--- func-0.13/setup.py~	2007-10-24 00:42:35.000000000 +0300
++++ func-0.13/setup.py	2007-12-05 09:24:37.560591374 +0200
+@@ -15,7 +15,7 @@
+  
+         manpath    = "share/man/man1/"
+         etcpath    = "/etc/%s" % NAME
+-        initpath   = "/etc/init.d/"
++        initpath   = "/etc/rc.d/init.d/"
+         logpath    = "/var/log/%s/" % NAME
+         pkipath    = "/etc/pki/%s" % NAME
+         rotpath    = "/etc/logrotate.d"
