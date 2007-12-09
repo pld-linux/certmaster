@@ -1,48 +1,93 @@
 #!/bin/sh
 #
-# func:		Starts the func certmaster daemon
+# certmaster	certmaster short service description
 #
-# Version:	@(#) /etc/rc.d/init.d/func 0.1
+# chkconfig:	- 97 3
 #
-# chkconfig:	- 98 99
-# description:	Starts and stops the func daemon at startup and shutdown..
+# description:	certmaster long service description
+#
+# $Id$
 
+# Source function library
 . /etc/rc.d/init.d/functions
+
+# Get network config
+. /etc/sysconfig/network
+
+# Get service config - may override defaults
+[ -f /etc/sysconfig/certmaster ] && . /etc/sysconfig/certmaster
+
+# Check that networking is up.
+if is_yes "${NETWORKING}"; then
+	if [ ! -f /var/lock/subsys/network -a "$1" != stop -a "$1" != status ]; then
+		msg_network_down certmaster
+		exit 1
+	fi
+else
+	exit 0
+fi
+
+start() {
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/certmaster ]; then
+		msg_starting certmaster
+		daemon /usr/bin/certmaster
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/certmaster
+	else
+		msg_already_running certmaster
+	fi
+}
+
+stop() {
+	if [ -f /var/lock/subsys/certmaster ]; then
+		# Stop daemons.
+		msg_stopping certmaster
+		killproc certmaster
+		killproc --pidfile /var/run/certmaster.pid certmaster -TERM
+		rm -f /var/lock/subsys/certmaster
+	else
+		msg_not_running certmaster
+	fi
+}
+
+condrestart() {
+	if [ -f /var/lock/subsys/certmaster ]; then
+		stop
+		start
+	else
+		if [ $1 -ne 0 ]; then
+			msg_not_running certmaster
+		fi
+		RETVAL=$1
+	fi
+}
 
 RETVAL=0
 # See how we were called.
 case "$1" in
   start)
-	# Check if the service is already running?
-	if [ ! -f /var/lock/subsys/certmaster ]; then
-		msg_starting "certmaster"
-		daemon /usr/bin/certmaster
-		RETVAL=$?
-		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/certmaster
-	else
-		msg_already_running "certmaster"
-	fi
+  	start
 	;;
   stop)
-	if [ -f /var/lock/subsys/certmaster ]; then
-		msg_stopping "certmaster"
-		killproc certmaster
-		rm -f /var/lock/subsys/certmaster
-	else
-		msg_not_running "certmaster"
-	fi
+  	stop
+	;;
+  restart)
+	stop
+	start
+	;;
+  try-restart)
+	condrestart 0
+	;;
+  force-reload)
+	condrestart 7
 	;;
   status)
 	status certmaster
-	exit $?
-	;;
-  restart|force-reload)
-	$0 stop
-	$0 start
-	exit $?
+	RETVAL=$?
 	;;
   *)
-	msg_usage "$0 {start|stop|restart|force-reload|status}"
+	msg_usage "$0 {start|stop|restart|try-restart|force-reload|status}"
 	exit 3
 esac
 
