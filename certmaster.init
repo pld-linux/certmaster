@@ -1,10 +1,10 @@
 #!/bin/sh
 #
-# certmaster	certmaster short service description
+# certmaster    certmaster
 #
-# chkconfig:	- 97 3
+# chkconfig:	345 98 02
 #
-# description:	certmaster long service description
+# description:	certificate master to sign/manage ca/cert infrastructure
 #
 # $Id$
 
@@ -31,7 +31,7 @@ start() {
 	# Check if the service is already running?
 	if [ ! -f /var/lock/subsys/certmaster ]; then
 		msg_starting certmaster
-		daemon /usr/bin/certmaster
+		daemon /usr/bin/certmaster --daemon
 		RETVAL=$?
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/certmaster
 	else
@@ -43,7 +43,6 @@ stop() {
 	if [ -f /var/lock/subsys/certmaster ]; then
 		# Stop daemons.
 		msg_stopping certmaster
-		killproc certmaster
 		killproc --pidfile /var/run/certmaster.pid certmaster -TERM
 		rm -f /var/lock/subsys/certmaster
 	else
