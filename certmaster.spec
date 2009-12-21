@@ -1,9 +1,9 @@
 Summary:	Remote certificate distribution framework
 Name:		certmaster
-Version:	0.19
+Version:	0.25
 Release:	0.1
-Source0:	http://people.fedoraproject.org/~mdehaan/files/certmaster/%{name}-%{version}.tar.gz
-# Source0-md5:	4eaa9876b0c158dcf2f099b330f0eeb6
+Source0:	http://people.fedoraproject.org/~alikins/files/certmaster/%{name}-%{version}.tar.gz
+# Source0-md5:	83d6115f2cff4af18e150274602c71c1
 Source1:	certmaster.init
 Patch0:		%{name}-setup.patch
 License:	GPL v2+
@@ -59,6 +59,7 @@ fi
 %doc AUTHORS README
 %attr(755,root,root) %{_bindir}/certmaster
 %attr(755,root,root) %{_bindir}/certmaster-request
+%attr(755,root,root) %{_bindir}/certmaster-sync
 %attr(755,root,root) %{_bindir}/certmaster-ca
 %attr(754,root,root) /etc/rc.d/init.d/certmaster
 %dir %{_sysconfdir}/%{name}
@@ -70,15 +71,8 @@ fi
 %config(noreplace) /etc/logrotate.d/certmaster_rotate
 %{_mandir}/man1/*.1*
 
-%dir %{py_sitescriptdir}/certmaster
-%dir %{py_sitescriptdir}/certmaster/minion
-%dir %{py_sitescriptdir}/certmaster/overlord
 %{py_sitescriptdir}/certmaster/*.py[co]
-%{py_sitescriptdir}/certmaster/minion/*.py[co]
-%{py_sitescriptdir}/certmaster/overlord/*.py[co]
-%if "%{py_ver}" > "2.4"
-%{py_sitescriptdir}/certmaster*.egg-info
-%endif
+%{py_sitescriptdir}/*.egg-info
 
 %dir /var/log/certmaster
 %dir /var/lib/certmaster
