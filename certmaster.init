@@ -20,7 +20,7 @@
 # Check that networking is up.
 if is_yes "${NETWORKING}"; then
 	if [ ! -f /var/lock/subsys/network -a "$1" != stop -a "$1" != status ]; then
-		msg_network_down certmaster
+		msg_network_down "Certmaster"
 		exit 1
 	fi
 else
@@ -29,37 +29,38 @@ fi
 
 start() {
 	# Check if the service is already running?
-	if [ ! -f /var/lock/subsys/certmaster ]; then
-		msg_starting certmaster
-		daemon /usr/bin/certmaster --daemon
-		RETVAL=$?
-		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/certmaster
-	else
-		msg_already_running certmaster
+	if [ -f /var/lock/subsys/certmaster ]; then
+		msg_already_running "Certmaster"
+		return
 	fi
+
+	msg_starting "Certmaster"
+	daemon /usr/bin/certmaster --daemon
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/certmaster
 }
 
 stop() {
-	if [ -f /var/lock/subsys/certmaster ]; then
-		# Stop daemons.
-		msg_stopping certmaster
-		killproc --pidfile /var/run/certmaster.pid certmaster -TERM
-		rm -f /var/lock/subsys/certmaster
-	else
-		msg_not_running certmaster
+	if [ ! -f /var/lock/subsys/certmaster ]; then
+		msg_not_running "Certmaster"
+		return
 	fi
+
+	# Stop daemons.
+	msg_stopping "Certmaster"
+	killproc --pidfile /var/run/certmaster.pid certmaster -TERM
+	rm -f /var/lock/subsys/certmaster
 }
 
 condrestart() {
-	if [ -f /var/lock/subsys/certmaster ]; then
-		stop
-		start
-	else
-		if [ $1 -ne 0 ]; then
-			msg_not_running certmaster
-		fi
+	if [ ! -f /var/lock/subsys/certmaster ]; then
+		msg_not_running "Certmaster"
 		RETVAL=$1
+		return
 	fi
+
+	stop
+	start
 }
 
 RETVAL=0
