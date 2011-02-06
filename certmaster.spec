@@ -45,7 +45,7 @@ ln -s %{_bindir}/certmaster-sync $RPM_BUILD_ROOT/var/lib/certmaster/triggers/sig
 ln -s %{_bindir}/certmaster-sync $RPM_BUILD_ROOT/var/lib/certmaster/triggers/remove/post/certmaster-sync
 
 %clean
-rm -fr $RPM_BUILD_ROOT
+rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add certmaster
