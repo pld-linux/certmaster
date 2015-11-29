@@ -10,7 +10,7 @@ License:	GPL v2+
 Group:		Applications/System
 URL:		https://fedorahosted.org/certmaster
 BuildRequires:	python
-BuildRequires:	rpmbuild(macros) >= 1.268
+BuildRequires:	rpmbuild(macros) >= 1.710
 Requires(post,preun):	/sbin/chkconfig
 Requires:	python >= 1:2.3
 Requires:	python-pyOpenSSL
